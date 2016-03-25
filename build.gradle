@@ -12,8 +12,9 @@ repositories {
 }
 
 dependencies {
-    compile group: 'io.nats', name: 'jnats', version:'0.3.1'
-    compile group: 'com.esotericsoftware', name: 'kryo', version:'3.0.3'
+    compile group: 'io.nats', name: 'jnats', version:'0.3.+'
+    compile group: 'com.esotericsoftware', name: 'kryo-shaded', version:'3.+'
+    compile group: 'org.objenesis', name: 'objenesis', version:'2.+'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.12'
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.5'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.5'
