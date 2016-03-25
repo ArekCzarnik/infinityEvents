@@ -1,17 +1,35 @@
 package de.infinity.events.api;
 
 import de.infinity.events.domain.PatchEvent;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
+import rx.Observable;
+import rx.schedulers.Schedulers;
 
 public class QueueTest {
 
+    private Queue queue;
+
+
+    @Before
+    public void setup() {
+        queue = new Queue("nats://192.168.99.100:32771");
+    }
+
+    @Ignore
     @Test
     public void sendPatchEvent() throws Exception {
-        //Queue queue = new Queue("nats://192.168.91.100:32771");
-        //queue.sendPatchEvent("test",new PatchEvent("id","test","md5","patch"));
-        // test
+        queue.sendPatchEvent("test", new PatchEvent("id", "test", "md5", "patch"));
+    }
+
+    @Ignore
+    @Test
+    public void relivePatchEvent() throws Exception {
+        final Observable<PatchEvent> patchEventObservable = PatchObservable.toObservable("test", queue.getConnection());
+        patchEventObservable.subscribeOn(Schedulers.io()).subscribe(patchEvent -> {
+            System.out.println(patchEvent.getId());
+        });
     }
 
 }
