@@ -20,7 +20,7 @@ public class QueueTest {
     @Ignore
     @Test
     public void sendPatchEvent() throws Exception {
-        queue.sendPatchEvent("test", new PatchEvent("id", "test", "md5", "patch"));
+        queue.sendPatchEvent("infinity.patch", new PatchEvent("id", "test", "md5", "patch"));
     }
 
     @Ignore

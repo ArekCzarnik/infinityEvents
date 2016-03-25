@@ -14,9 +14,8 @@ public class PatchObservable {
                 connection.subscribeAsync(channel, message -> {
                     final PatchEvent patch = KryoUtils.kryoThreadLocal.get().readObject(new Input(message.getData()), PatchEvent.class);
                     subscriber.onNext(patch);
-                    subscriber.onCompleted();
                 });
-            }catch (Exception e) {
+            } catch (Exception e) {
                 subscriber.onError(e);
             }
         });
