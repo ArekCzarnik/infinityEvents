@@ -11,6 +11,7 @@ public class QueueTest {
     public void sendPatchEvent() throws Exception {
         //Queue queue = new Queue("nats://192.168.91.100:32771");
         //queue.sendPatchEvent("test",new PatchEvent("id","test","md5","patch"));
+        // test
     }
 
 }
