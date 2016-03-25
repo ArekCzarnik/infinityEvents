@@ -12,6 +12,14 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+/***
+ *       _      ____      _ __                           __
+ *      (_)__  / _(_)__  (_) /___ __  ___ _  _____ ___  / /____
+ *     / / _ \/ _/ / _ \/ / __/ // / / -_) |/ / -_) _ \/ __(_-<_ _ _
+ *    /_/_//_/_//_/_//_/_/\__/\_, /  \__/|___/\__/_//_/\__/___(_|_|_)
+ *                           /___/
+ */
+
 public class Queue {
 
     private static final Logger LOG = LoggerFactory.getLogger(Queue.class);
