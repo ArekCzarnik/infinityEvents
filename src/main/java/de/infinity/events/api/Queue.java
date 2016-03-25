@@ -6,35 +6,38 @@ import de.infinity.events.domain.PatchEvent;
 import de.infinity.events.utils.KryoUtils;
 import io.nats.client.Connection;
 import io.nats.client.ConnectionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 public class Queue {
 
-    public static final String INFINITY_PATCH_CHANNEL = "infinity.patch";
-    public static Logger Log = Logger.getInstance(Queue.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Queue.class);
     private final Kryo kryo;
     private final ConnectionFactory connectionFactory;
     private Connection connection;
 
-    public Queue() {
+    public Queue(final String url) {
         kryo = KryoUtils.kryoThreadLocal.get();
-        connectionFactory = new ConnectionFactory("nats://192.168.99.100:32771");
+        connectionFactory = new ConnectionFactory(url);
         try {
             connection = connectionFactory.createConnection();
         } catch (IOException | TimeoutException e) {
-            Log.error(e);
+            LOG.error("queue connection error:", e);
         }
 
     }
 
-    public void sendPatchEvent(final PatchEvent patchEvent) {
+    public void sendPatchEvent(final String channel, final PatchEvent patchEvent) {
         try (Output output = new Output(4096 * 4)) {
             kryo.writeObject(output, patchEvent);
-            connection.publish(INFINITY_PATCH_CHANNEL, output.toBytes());
+            connection.publish(channel, output.toBytes());
         }
     }
 
-
+    public Connection getConnection() {
+        return connection;
+    }
 }

@@ -6,16 +6,17 @@ version = '1.0-SNAPSHOT'
 
 description = """"""
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-
 
 repositories {
-        
      maven { url "http://repo.maven.apache.org/maven2" }
 }
+
 dependencies {
     compile group: 'io.nats', name: 'jnats', version:'0.3.1'
     compile group: 'com.esotericsoftware', name: 'kryo', version:'3.0.3'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.12'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.5'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.5'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.5'
+    testCompile 'junit:junit:4.12'
 }
