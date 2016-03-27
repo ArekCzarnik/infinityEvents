@@ -28,10 +28,9 @@ public class QueueTest {
                 "-a\n"));
     }
 
-    @Ignore
     @Test
     public void relivePatchEvent() throws Exception {
-        final Observable<PatchEvent> patchEventObservable = PatchObservable.toObservable("test", queue.getConnection());
+        final Observable<PatchEvent> patchEventObservable = PatchObservable.toObservable("test.infinity.patch", queue.getConnection());
         patchEventObservable.subscribeOn(Schedulers.io()).subscribe(patchEvent -> {
             System.out.println(patchEvent.getId());
         });
