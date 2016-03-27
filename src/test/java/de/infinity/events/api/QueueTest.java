@@ -14,13 +14,18 @@ public class QueueTest {
 
     @Before
     public void setup() {
-        queue = new Queue("nats://192.168.99.100:32771");
+        final String url = System.getenv().get("NATS_URL");
+        if (url != null && !url.isEmpty()) {
+            queue = new Queue(url);
+        } else {
+            queue = new Queue("nats://localhost:4222");
+        }
     }
 
-    @Ignore
     @Test
     public void sendPatchEvent() throws Exception {
-        queue.sendPatchEvent("infinity.patch", new PatchEvent("id", "test", "md5", "patch"));
+        queue.sendPatchEvent("test.infinity.patch", new PatchEvent("vws://testplugin3/src/test", "test", "0cc175b9c0f1b6a831c399e269772661", "@@ -1 +0,0 @@\n" +
+                "-a\n"));
     }
 
     @Ignore
