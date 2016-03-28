@@ -31,4 +31,14 @@ public class PatchEvent implements Serializable {
     public String getPatchString() {
         return patchString;
     }
+
+    @Override
+    public String toString() {
+        return "PatchEvent{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", md5='" + md5 + '\'' +
+                ", patchString='" + patchString + '\'' +
+                '}';
+    }
 }

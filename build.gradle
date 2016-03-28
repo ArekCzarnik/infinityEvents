@@ -29,6 +29,7 @@ dependencies {
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.5'
     compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.5'
     compile group: 'io.reactivex', name: 'rxjava', version: '1.+'
+    compile group: 'com.rabbitmq', name: 'amqp-client', version: '3.+'
     testCompile 'junit:junit:4.12'
 }
 
