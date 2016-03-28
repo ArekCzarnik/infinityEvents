@@ -47,6 +47,7 @@ public class Queue {
         }
     }
 
+
     public Channel getChannel() {
         return channel;
     }

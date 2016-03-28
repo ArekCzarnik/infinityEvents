@@ -2,9 +2,13 @@ package de.infinity.events.api;
 
 import com.rabbitmq.client.Channel;
 import de.infinity.events.domain.PatchEvent;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import rx.Observable;
+
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 public class QueueTest {
 
@@ -20,6 +24,11 @@ public class QueueTest {
             queue = new Queue("192.168.99.100");
         }
         channel = queue.getChannel();
+    }
+
+    @After
+    public void teardown() throws IOException, TimeoutException {
+        queue.close();
     }
 
     @Test
