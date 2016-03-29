@@ -9,6 +9,9 @@ import de.infinity.events.domain.PatchEvent;
 import de.infinity.events.utils.KryoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rx.Observable;
+import rx.Subscription;
+import rx.functions.Action1;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -39,14 +42,23 @@ public class Queue {
         try (Output output = new Output(4096 * 4)) {
             kryo.writeObject(output, patchEvent);
             try {
-                channel.exchangeDeclare(topic,"fanout");
+                channel.exchangeDeclare(topic, "fanout");
                 channel.basicPublish(topic, "", null, output.toBytes());
             } catch (IOException e) {
-                LOG.error("error",e);
+                LOG.error("error", e);
             }
         }
     }
 
+
+    public Subscription consume(final String topic, final Action1<? super PatchEvent> onNext) throws IOException {
+        final String queue = channel.queueDeclare().getQueue();
+        channel.queueBind(queue, topic, "");
+        PatchObservableConsumer patchObservableConsumer = new PatchObservableConsumer(channel);
+        final Observable<PatchEvent> patchEventObservable = patchObservableConsumer.asObservable();
+        channel.basicConsume(queue, true, patchObservableConsumer);
+        return patchEventObservable.subscribe(onNext);
+    }
 
     public Channel getChannel() {
         return channel;

@@ -40,8 +40,7 @@ public class QueueTest {
 
     @Test
     public void receivePatchEvent() throws Exception {
-        final Observable<PatchEvent> patchEventObservable = PatchObservable.toObservable("test.infinity.patch", channel);
-        patchEventObservable.subscribe(patchEvent -> {
+        queue.consume("test.infinity.patch",patchEvent -> {
             System.out.println(patchEvent.getId());
         });
     }
