@@ -5,7 +5,6 @@ import de.infinity.events.domain.PatchEvent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import rx.Observable;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -33,9 +32,9 @@ public class QueueTest {
 
     @Test
     public void sendPatchEvent() throws Exception {
-        queue.sendPatchEvent("test.infinity.patch", new PatchEvent("vws://testplugin3/src/test", "test", "0cc175b9c0f1b6a831c399e269772661", "@@ -1 +0,0 @@\n" + "-a\n"));
-        queue.sendPatchEvent("test.infinity.patch", new PatchEvent("vws://testplugin3/src/test", "test", "0cc175b9c0f1b6a831c399e269772661", "@@ -1 +0,0 @@\n" + "-a\n"));
-        queue.sendPatchEvent("test.infinity.patch", new PatchEvent("vws://testplugin3/src/test", "test", "0cc175b9c0f1b6a831c399e269772661", "@@ -1 +0,0 @@\n" + "-a\n"));
+        queue.sendPatchEvent("test.infinity.patch", new PatchEvent("vws://testplugin3/src/test", clientId, "test", "0cc175b9c0f1b6a831c399e269772661", "@@ -1 +0,0 @@\n" + "-a\n"));
+        queue.sendPatchEvent("test.infinity.patch", new PatchEvent("vws://testplugin3/src/test", clientId, "test", "0cc175b9c0f1b6a831c399e269772661", "@@ -1 +0,0 @@\n" + "-a\n"));
+        queue.sendPatchEvent("test.infinity.patch", new PatchEvent("vws://testplugin3/src/test", clientId, "test", "0cc175b9c0f1b6a831c399e269772661", "@@ -1 +0,0 @@\n" + "-a\n"));
     }
 
     @Test
