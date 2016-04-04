@@ -1,6 +1,7 @@
 package de.infinity.events.api;
 
 import com.rabbitmq.client.Channel;
+import de.infinity.events.domain.CreateFile;
 import de.infinity.events.domain.PatchEvent;
 import org.junit.After;
 import org.junit.Before;
@@ -18,9 +19,9 @@ public class QueueTest {
     public void setup() {
         final String url = System.getenv().get("QUEUE_URL");
         if (url != null && !url.isEmpty()) {
-            queue = new Queue(url);
+            queue = new Queue(url,"guest","guest");
         } else {
-            queue = new Queue("192.168.99.100");
+            queue = new Queue("192.168.99.100","guest","guest");
         }
         channel = queue.getChannel();
     }
@@ -32,9 +33,12 @@ public class QueueTest {
 
     @Test
     public void sendPatchEvent() throws Exception {
-        queue.sendPatchEvent("test.infinity.patch", new PatchEvent("vws://testplugin3/src/test", clientId, "test", "0cc175b9c0f1b6a831c399e269772661", "@@ -1 +0,0 @@\n" + "-a\n"));
-        queue.sendPatchEvent("test.infinity.patch", new PatchEvent("vws://testplugin3/src/test", clientId, "test", "0cc175b9c0f1b6a831c399e269772661", "@@ -1 +0,0 @@\n" + "-a\n"));
-        queue.sendPatchEvent("test.infinity.patch", new PatchEvent("vws://testplugin3/src/test", clientId, "test", "0cc175b9c0f1b6a831c399e269772661", "@@ -1 +0,0 @@\n" + "-a\n"));
+        queue.sendPatchEvent("test.infinity.patch", new PatchEvent("vws://testplugin3/src/test", "clientId", "test", "0cc175b9c0f1b6a831c399e269772661", "@@ -1 +0,0 @@\n" + "-a\n"));
+    }
+
+    @Test
+    public void sendCreateFile() throws Exception {
+        queue.sendCreateFileEvent("test.infinity.patch", new CreateFile("vws://testplugin3/src/test", "this is the content", "/src/test", "0cc175b9c0f1b6a831c399e269772661", "UTF-8"));
     }
 
     @Test
