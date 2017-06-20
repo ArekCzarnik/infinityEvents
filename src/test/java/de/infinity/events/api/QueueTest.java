@@ -21,7 +21,7 @@ public class QueueTest {
         if (url != null && !url.isEmpty()) {
             queue = new Queue(url,"guest","guest");
         } else {
-            queue = new Queue("192.168.99.100","guest","guest");
+            queue = new Queue("localhost","guest","guest");
         }
         channel = queue.getChannel();
     }
