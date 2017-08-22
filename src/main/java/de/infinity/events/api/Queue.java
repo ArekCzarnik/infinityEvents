@@ -1,18 +1,20 @@
 package de.infinity.events.api;
 
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.QueueingConsumer;
 import de.infinity.events.domain.CreateFile;
 import de.infinity.events.domain.PatchEvent;
 import de.infinity.events.utils.KryoUtils;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rx.Observable;
-import rx.Subscription;
-import rx.functions.Action1;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,12 +31,23 @@ public class Queue {
     private Connection connection;
     private Channel channel;
 
-    public Queue(final String url,final String username,final String password) {
+    public Queue(final String url, final String username, final String password) {
         kryo = KryoUtils.kryoThreadLocal.get();
         connectionFactory = new ConnectionFactory();
         connectionFactory.setUsername(username);
         connectionFactory.setPassword(password);
         connectionFactory.setAutomaticRecoveryEnabled(true);
+        // Timeout for connection establishment: 5s
+        connectionFactory.setConnectionTimeout( 5000 );
+
+// Configure automatic reconnections
+        connectionFactory.setAutomaticRecoveryEnabled( true );
+
+// Recovery interval: 10s
+        connectionFactory.setNetworkRecoveryInterval( 10000 );
+
+// Exchanges and so on should be redeclared if necessary
+        connectionFactory.setTopologyRecoveryEnabled( true );
         connectionFactory.setHost(url);
         try {
             connection = connectionFactory.newConnection();
@@ -55,11 +68,11 @@ public class Queue {
     public void sendCreateFileEvent(final String topic, final CreateFile createFile) {
         try (Output output = new Output(new ByteArrayOutputStream(), DEFAULT_BUFFER)) {
             kryo.writeObject(output, createFile);
-            sendEvent(topic,output.toBytes());
+            sendEvent(topic, output.toBytes());
         }
     }
 
-    private void sendEvent(final String topic,byte[] bytes) {
+    private void sendEvent(final String topic, byte[] bytes) {
         try {
             channel.exchangeDeclare(topic, "fanout");
             channel.basicPublish(topic, "", null, bytes);
@@ -68,14 +81,26 @@ public class Queue {
         }
     }
 
-    public Subscription consume(final String topic, final Action1<? super PatchEvent> onNext) throws IOException {
+    public Flowable<PatchEvent> consume(final String topic) throws IOException {
         final String queue = channel.queueDeclare().getQueue();
         channel.exchangeDeclare(topic, "fanout");
         channel.queueBind(queue, topic, "");
-        PatchObservableConsumer patchObservableConsumer = new PatchObservableConsumer(channel);
-        final Observable<PatchEvent> patchEventObservable = patchObservableConsumer.asObservable();
-        channel.basicConsume(queue, true, patchObservableConsumer);
-        return patchEventObservable.subscribe(onNext);
+        final QueueingConsumer queueingConsumer = new QueueingConsumer(channel);
+        channel.basicConsume(queue, true, queueingConsumer);
+        return Flowable.create(emitter -> handleEmitter(emitter, queueingConsumer), BackpressureStrategy.BUFFER);
+    }
+
+    private void handleEmitter(FlowableEmitter emitter, QueueingConsumer queueingConsumer) {
+        try {
+            while (true) {
+                byte[] body = queueingConsumer.nextDelivery().getBody();
+                PatchEvent patchEvent = KryoUtils.kryoThreadLocal.get().readObject(new Input(body), PatchEvent.class);
+                emitter.onNext(patchEvent);
+            }
+        } catch (InterruptedException e) {
+            emitter.onComplete();
+            LOG.error("error", e);
+        }
     }
 
     public Channel getChannel() {
